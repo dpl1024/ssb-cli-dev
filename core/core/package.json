@@ -30,7 +30,9 @@
     "access": "public"
   },
   "dependencies": {
+    "@ssb-cli-dev/utils": "file:../../utils/utils",
+    "import-local": "^3.1.0",
     "lodash": "^4.17.21",
-    "@ssb-cli-dev/utils": "file:../../utils/utils"
+    "npmlog": "^6.0.2"
   }
 }
