@@ -30,6 +30,7 @@
     "access": "public"
   },
   "dependencies": {
+    "@ssb-cli-dev/log": "file:../../utils/log",
     "@ssb-cli-dev/utils": "file:../../utils/utils",
     "import-local": "^3.1.0",
     "lodash": "^4.17.21",
