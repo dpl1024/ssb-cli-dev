@@ -6,6 +6,9 @@
   "homepage": "https://github.com/dpl1024/ssb-cli-dev/tree/main/packages/core#readme",
   "license": "ISC",
   "main": "lib/core.js",
+  "bin": {
+    "ssb-cli-dev": "bin/index.js"
+  },
   "directories": {
     "lib": "lib",
     "test": "__tests__"
@@ -28,6 +31,6 @@
   },
   "dependencies": {
     "lodash": "^4.17.21",
-    "@ssb-cli-dev/utils": "^1.0.0"
+    "@ssb-cli-dev/utils": "file:../../utils/utils"
   }
 }
