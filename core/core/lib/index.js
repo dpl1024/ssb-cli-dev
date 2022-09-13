@@ -18,9 +18,17 @@ function core() {
   try {
     checkPkgVersion();
     checkNodeVersion();
+    checkRoot();
   } catch (e) {
     log.error(e.message);
   }
+}
+
+function checkRoot() {
+  // process.geteuid()
+  // 0 root
+  const rootCheck = require('root-check');
+  rootCheck();
 }
 
 function checkNodeVersion() {
