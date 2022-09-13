@@ -36,7 +36,9 @@
     "import-local": "^3.1.0",
     "lodash": "^4.17.21",
     "npmlog": "^6.0.2",
-    "root-check": "^2.0.0",
-    "semver": "^7.3.7"
+    "path-exists": "^4.0.0",
+    "root-check": "^1.0.0",
+    "semver": "^7.3.7",
+    "user-home": "^3.0.0"
   }
 }

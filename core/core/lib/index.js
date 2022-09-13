@@ -9,6 +9,8 @@ module.exports = core;
  */
 
 const log = require('@ssb-cli-dev/log');
+const userHome = require('user-home');
+const pathExistsSync = require('path-exists').sync;
 const semver = require('semver');
 const colors = require('colors/safe');
 const pkg = require('../package.json');
@@ -19,8 +21,16 @@ function core() {
     checkPkgVersion();
     checkNodeVersion();
     checkRoot();
+    checkUserHome();
   } catch (e) {
     log.error(e.message);
+  }
+}
+
+function checkUserHome() {
+  console.log(userHome);
+  if (!userHome || !pathExistsSync(userHome)) {
+    throw new Error(colors.red('当前登录用户主目录不存在！'));
   }
 }
 
