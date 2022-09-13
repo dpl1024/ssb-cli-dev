@@ -13,6 +13,7 @@ const userHome = require('user-home');
 const pathExistsSync = require('path-exists').sync;
 const semver = require('semver');
 const colors = require('colors/safe');
+const path = require('path');
 const pkg = require('../package.json');
 const constant = require('./const');
 
@@ -25,10 +26,35 @@ function core() {
     checkRoot();
     checkUserHome();
     checkInputArgs();
-    log.verbose('debug', 'test debug log');
+    checkEnv();
   } catch (e) {
     log.error(e.message);
   }
+}
+
+function checkEnv() {
+  const dotenv = require('dotenv');
+  const envPath = path.resolve(userHome, '.env');
+  if (pathExistsSync(envPath)) {
+    dotenv.config({
+      path: envPath,
+    });
+  }
+  createDefaultConfig();
+  log.verbose('环境变量', process.env.CLI_HOME_PATH);
+}
+
+function createDefaultConfig() {
+  const cliConfig = {
+    home: userHome,
+  };
+  if (process.env.CLI_HOME) {
+    cliConfig.cliHome = path.join(userHome, process.env.CLI_HOME);
+  } else {
+    cliConfig.cliHome = path.join(userHome, constant.DEFAULT_CLI_HOME);
+  }
+  process.env.CLI_HOME_PATH = cliConfig.cliHome;
+  return cliConfig;
 }
 
 function checkInputArgs() {
@@ -47,7 +73,6 @@ function checkArgs() {
 }
 
 function checkUserHome() {
-  console.log(userHome);
   if (!userHome || !pathExistsSync(userHome)) {
     throw new Error(colors.red('当前登录用户主目录不存在！'));
   }
