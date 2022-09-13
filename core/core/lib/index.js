@@ -16,15 +16,34 @@ const colors = require('colors/safe');
 const pkg = require('../package.json');
 const constant = require('./const');
 
+let args;
+
 function core() {
   try {
     checkPkgVersion();
     checkNodeVersion();
     checkRoot();
     checkUserHome();
+    checkInputArgs();
+    log.verbose('debug', 'test debug log');
   } catch (e) {
     log.error(e.message);
   }
+}
+
+function checkInputArgs() {
+  const minimist = require('minimist');
+  args = minimist(process.argv.slice(2));
+  checkArgs();
+}
+
+function checkArgs() {
+  if (args.debug) {
+    process.env.LOG_LEVEL = 'verbose';
+  } else {
+    process.env.LOG_LEVEL = 'info';
+  }
+  log.level = process.env.LOG_LEVEL;
 }
 
 function checkUserHome() {
