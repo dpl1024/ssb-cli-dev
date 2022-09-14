@@ -27,8 +27,25 @@ function core() {
     checkUserHome();
     checkInputArgs();
     checkEnv();
+    checkGlobalUpdate();
   } catch (e) {
     log.error(e.message);
+  }
+}
+
+async function checkGlobalUpdate() {
+  /**
+   * 1.获取最新版本号和模块名后
+   * 2.调用npm api，获取所有版本号
+   * 3.提取所有版本号，对比版本号是否大于当前版本号
+   * 4.获取最新版本号，提示用户更新
+   */
+  const currentVersion = pkg.version;
+  const npmName = pkg.name;
+  const { getNpmSemverVersions } = require('@ssb-cli-dev/get-npm-info');
+  const latestVersion = await getNpmSemverVersions(currentVersion, npmName);
+  if (latestVersion && semver.gt(latestVersion, currentVersion)) {
+    log.warn('更新提示', colors.yellow(`请手动更新 ${npmName}, 当前版本: ${currentVersion}, 最新版本: ${latestVersion}, 更新命令: npm install -g ${npmName}`));
   }
 }
 
