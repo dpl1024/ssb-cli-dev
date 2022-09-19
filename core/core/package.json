@@ -31,9 +31,11 @@
   },
   "dependencies": {
     "@ssb-cli-dev/get-npm-info": "file:../../utils/get-npm-info",
+    "@ssb-cli-dev/init": "file:../../commands/init",
     "@ssb-cli-dev/log": "file:../../utils/log",
     "@ssb-cli-dev/utils": "file:../../utils/utils",
     "colors": "^1.4.0",
+    "commander": "^9.4.0",
     "dotenv": "^16.0.2",
     "import-local": "^3.1.0",
     "lodash": "^4.17.21",
