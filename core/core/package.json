@@ -39,7 +39,6 @@
     "dotenv": "^16.0.2",
     "import-local": "^3.1.0",
     "lodash": "^4.17.21",
-    "minimist": "^1.2.6",
     "npmlog": "^6.0.2",
     "path-exists": "^4.0.0",
     "root-check": "^1.0.0",

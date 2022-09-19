@@ -1,5 +1,3 @@
-module.exports = core;
-
 /**
  * require支持加载的文件类型
  * .js module.exports/exports
@@ -8,7 +6,7 @@ module.exports = core;
  * 其他 按照 .js 文件解析
  */
 
-const log = require('@ssb-cli-dev/log');
+const npmlog = require('@ssb-cli-dev/log');
 const init = require('@ssb-cli-dev/init');
 const userHome = require('user-home');
 const pathExistsSync = require('path-exists').sync;
@@ -16,27 +14,30 @@ const semver = require('semver');
 const colors = require('colors/safe');
 const path = require('path');
 const commander = require('commander');
+const { getNpmSemverVersions } = require('@ssb-cli-dev/get-npm-info');
+const dotenv = require('dotenv');
+const rootCheck = require('root-check');
 const pkg = require('../package.json');
 const constant = require('./const');
-
-let args;
 
 const program = new commander.Command();
 
 async function core() {
   try {
-    checkPkgVersion();
-    checkNodeVersion();
-    checkRoot();
-    checkUserHome();
-    // heckInputArgs();
-    checkEnv();
-    await checkGlobalUpdate();
+    await prepare();
     registerCommand();
-    log.verbose('test');
   } catch (e) {
     log.error(e.message);
   }
+}
+
+async function prepare() {
+  checkPkgVersion();
+  checkNodeVersion();
+  checkRoot();
+  checkUserHome();
+  checkEnv();
+  await checkGlobalUpdate();
 }
 
 function registerCommand() {
@@ -44,21 +45,24 @@ function registerCommand() {
     .name(Object.keys(pkg.bin)[0])
     .usage('<command> [options]')
     .version(pkg.version)
-    .option('-d --debug', '是否开启调试模式', false);
+    .option('-d --debug', '是否开启调试模式', false)
+    .option('-tp, --targetPath <targetPath>', '是否指定本地调试文件路径', '');
 
   const opts = program.opts();
 
   program
     .on('option:debug', () => {
       if (opts.debug) {
-        // console.log('===== verbose =====');
         process.env.LOG_LEVEL = 'verbose';
       } else {
-        // console.log('===== info =====');
         process.env.LOG_LEVEL = 'info';
       }
       log.level = process.env.LOG_LEVEL;
     });
+
+  program.on('option:targetPath', () => {
+    process.env.CLI_TARGET_PATH = opts.targetPath;
+  });
 
   program
     .on('command:*', (obj) => {
@@ -78,7 +82,6 @@ function registerCommand() {
 
   if (program.args.length < 1) {
     program.outputHelp();
-    console.log();
   }
 
   program
@@ -94,7 +97,6 @@ async function checkGlobalUpdate() {
    */
   const currentVersion = pkg.version;
   const npmName = pkg.name;
-  const { getNpmSemverVersions } = require('@ssb-cli-dev/get-npm-info');
   const latestVersion = await getNpmSemverVersions(currentVersion, npmName);
   if (latestVersion && semver.gt(latestVersion, currentVersion)) {
     log.warn('更新提示', colors.yellow(`请手动更新 ${npmName}, 当前版本: ${currentVersion}, 最新版本: ${latestVersion}, 更新命令: npm install -g ${npmName}`));
@@ -102,7 +104,6 @@ async function checkGlobalUpdate() {
 }
 
 function checkEnv() {
-  const dotenv = require('dotenv');
   const envPath = path.resolve(userHome, '.env');
   if (pathExistsSync(envPath)) {
     dotenv.config({
@@ -110,7 +111,6 @@ function checkEnv() {
     });
   }
   createDefaultConfig();
-  log.verbose('环境变量', process.env.CLI_HOME_PATH);
 }
 
 function createDefaultConfig() {
@@ -126,21 +126,6 @@ function createDefaultConfig() {
   return cliConfig;
 }
 
-function checkInputArgs() {
-  const minimist = require('minimist');
-  args = minimist(process.argv.slice(2));
-  checkArgs();
-}
-
-function checkArgs() {
-  if (args.debug) {
-    process.env.LOG_LEVEL = 'verbose';
-  } else {
-    process.env.LOG_LEVEL = 'info';
-  }
-  log.level = process.env.LOG_LEVEL;
-}
-
 function checkUserHome() {
   if (!userHome || !pathExistsSync(userHome)) {
     throw new Error(colors.red('当前登录用户主目录不存在！'));
@@ -150,7 +135,6 @@ function checkUserHome() {
 function checkRoot() {
   // process.geteuid()
   // 0 root
-  const rootCheck = require('root-check');
   rootCheck();
 }
 
@@ -163,5 +147,7 @@ function checkNodeVersion() {
 }
 
 function checkPkgVersion() {
-  log.info('cli', pkg.version);
+  npmlog.info('cli', pkg.version);
 }
+
+module.exports = core;
