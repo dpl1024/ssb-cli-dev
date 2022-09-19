@@ -30,6 +30,7 @@
     "access": "public"
   },
   "dependencies": {
+    "@ssb-cli-dev/exec": "file:../exec",
     "@ssb-cli-dev/get-npm-info": "file:../../utils/get-npm-info",
     "@ssb-cli-dev/init": "file:../../commands/init",
     "@ssb-cli-dev/log": "file:../../utils/log",

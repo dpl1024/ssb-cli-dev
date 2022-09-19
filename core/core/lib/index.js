@@ -8,6 +8,7 @@
 
 const npmlog = require('@ssb-cli-dev/log');
 const init = require('@ssb-cli-dev/init');
+const exec = require('@ssb-cli-dev/exec');
 const userHome = require('user-home');
 const pathExistsSync = require('path-exists').sync;
 const semver = require('semver');
@@ -27,7 +28,7 @@ async function core() {
     await prepare();
     registerCommand();
   } catch (e) {
-    log.error(e.message);
+    npmlog.error(e.message);
   }
 }
 
@@ -57,7 +58,7 @@ function registerCommand() {
       } else {
         process.env.LOG_LEVEL = 'info';
       }
-      log.level = process.env.LOG_LEVEL;
+      npmlog.level = process.env.LOG_LEVEL;
     });
 
   program.on('option:targetPath', () => {
@@ -76,9 +77,7 @@ function registerCommand() {
   program
     .command('init [project-name]')
     .option('-f, --force', '是否强制初始化项目')
-    .action((projectName, cmdObj) => {
-      init(projectName, cmdObj);
-    });
+    .action(exec);
 
   if (program.args.length < 1) {
     program.outputHelp();
@@ -99,7 +98,7 @@ async function checkGlobalUpdate() {
   const npmName = pkg.name;
   const latestVersion = await getNpmSemverVersions(currentVersion, npmName);
   if (latestVersion && semver.gt(latestVersion, currentVersion)) {
-    log.warn('更新提示', colors.yellow(`请手动更新 ${npmName}, 当前版本: ${currentVersion}, 最新版本: ${latestVersion}, 更新命令: npm install -g ${npmName}`));
+    npmlog.warn('更新提示', colors.yellow(`请手动更新 ${npmName}, 当前版本: ${currentVersion}, 最新版本: ${latestVersion}, 更新命令: npm install -g ${npmName}`));
   }
 }
 
